@@ -447,26 +447,26 @@
 
       .game-container { padding: 0; }
 
-      /* Table takes up most of screen - tall portrait oval like the reference */
+      /* Table takes up most of screen - round circle like reference */
       .table {
-        width: 94vw;
-        height: 55vh;
-        border-radius: 45% / 50%;
+        width: 92vw;
+        height: 92vw;
+        border-radius: 50%;
         border-width: 6px;
         margin: 10px auto 10px auto;
         box-shadow: 0 0 20px rgba(0,0,0,0.5), inset 0 0 20px rgba(0,0,0,0.3);
       }
 
       /* Pot above center */
-      .pot-display { font-size: 0.8rem; margin-top: -60px; }
+      .pot-display { font-size: 0.8rem; margin-top: -70px; }
       .pot-chips { gap: 2px; margin-bottom: 4px; }
       .chip { width: 14px; height: 5px; margin-bottom: -2px; }
 
-      /* Board cards - centered, good size for mobile */
-      .board-card-wrapper { width: 40px; height: 54px; }
-      .board-card { width: 40px; height: 54px; }
-      .board-card-face, .board-card-back { font-size: 0.8rem; border-radius: 4px; }
-      .board { gap: 3px; margin-top: -5px; }
+      /* Board cards - inside upper portion of table */
+      .board-card-wrapper { width: 36px; height: 50px; }
+      .board-card { width: 36px; height: 50px; }
+      .board-card-face, .board-card-back { font-size: 0.75rem; border-radius: 4px; }
+      .board { gap: 3px; margin-top: -15px; }
 
       /* Seats around the tall oval */
       .seats { z-index: 3; }
@@ -475,25 +475,25 @@
       .seat .name { font-size: 0.6rem; padding: 3px 8px; border-radius: 6px 6px 0 0; }
       .seat .chips { font-size: 0.65rem; padding: 2px 8px 3px; border-radius: 0 0 6px 6px; font-weight: 700; }
 
-      /* Seat positions for portrait oval - spread out */
-      .seat:nth-child(1) { bottom: -46px; left: 50%; transform: translateX(-50%); }
-      .seat:nth-child(2) { bottom: -46px; left: 5%; }
-      .seat:nth-child(3) { top: 35%; left: -8%; }
-      .seat:nth-child(4) { top: -44px; left: 50%; transform: translateX(-50%); }
-      .seat:nth-child(5) { top: 35%; right: -8%; }
-      .seat:nth-child(6) { bottom: -46px; right: 5%; }
+      /* Seat positions for circle table */
+      .seat:nth-child(1) { bottom: -50px; left: 50%; transform: translateX(-50%); }
+      .seat:nth-child(2) { bottom: -50px; left: 2%; }
+      .seat:nth-child(3) { top: 45%; left: -10%; transform: translateY(-50%); }
+      .seat:nth-child(4) { top: -50px; left: 50%; transform: translateX(-50%); }
+      .seat:nth-child(5) { top: 45%; right: -10%; transform: translateY(-50%); }
+      .seat:nth-child(6) { bottom: -50px; right: 2%; }
 
-      /* Player showdown cards - tiny on portrait mobile */
-      .card-small { width: 12px; height: 17px; font-size: 0.25rem; border-radius: 2px; box-shadow: none; padding: 0; }
-      .seat-hands { gap: 0px; margin-bottom: 1px; }
-      .seat-hand-row { gap: 0px; }
+      /* Player showdown cards - small but readable */
+      .card-small { width: 18px; height: 25px; font-size: 0.35rem; border-radius: 2px; box-shadow: none; padding: 0; }
+      .seat-hands { gap: 0px; margin-bottom: 2px; }
+      .seat-hand-row { gap: 1px; }
       .hand-label { display: none; }
 
       /* Scoop bubble */
       .scoop-bubble { font-size: 0.6rem; padding: 3px 8px; }
 
       /* Phase banner - slim, below table */
-      .phase-banner { font-size: 0.7rem; padding: 5px 14px; margin: 48px 0 6px 0; }
+      .phase-banner { font-size: 0.7rem; padding: 5px 14px; margin: 54px 0 6px 0; }
 
       /* Arrangement area - full width, compact */
       .arrangement-area { padding: 10px 8px; margin: 6px 4px; border-radius: 10px; }
