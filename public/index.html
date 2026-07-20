@@ -483,10 +483,10 @@
       .seat:nth-child(5) { top: 28%; right: -6%; }
       .seat:nth-child(6) { bottom: -2%; right: 0%; }
 
-      /* Player showdown cards - compact */
-      .card-small { width: 20px; height: 28px; font-size: 0.4rem; border-radius: 3px; }
-      .seat-hands { gap: 1px; margin-bottom: 3px; }
-      .seat-hand-row { gap: 1px; }
+      /* Player showdown cards - smaller on portrait mobile */
+      .card-small { width: 16px; height: 22px; font-size: 0.35rem; border-radius: 2px; box-shadow: none; }
+      .seat-hands { gap: 0px; margin-bottom: 2px; }
+      .seat-hand-row { gap: 0px; }
       .hand-label { display: none; }
 
       /* Scoop bubble */
@@ -642,7 +642,7 @@
         <button class="btn btn-secondary" onclick="showAddChips()">Add Chips</button>
         <button class="btn btn-secondary" onclick="showLedger()">Ledger</button>
         <button class="btn btn-secondary" id="sweatBtn" onclick="toggleSweatMode()" style="background:#1a1a2e; border-color:#6c5ce7; color:#6c5ce7;">👁 Sweat: OFF</button>
-        <button class="btn btn-secondary" onclick="simulate()" style="background:#1a2a1a; border-color:#27ae60; color:#27ae60;">🤖 Simulate</button>
+        <!-- <button class="btn btn-secondary" onclick="simulate()" style="background:#1a2a1a; border-color:#27ae60; color:#27ae60;">🤖 Simulate</button> -->
         <button class="btn btn-danger" onclick="leaveTable()">Leave Table</button>
       </div>
 
