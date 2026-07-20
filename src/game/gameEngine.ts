@@ -69,6 +69,7 @@ export interface GameState {
   ledger: Map<string, LedgerEntry>;
   activeSideBet: SideBetProposal | null;
   juicerActive: boolean;   // whether the current hand has an active juicer
+  antesPostedPerPlayer: number;  // total antes each existing player has posted since last scoop
 }
 
 export class GameEngine {
@@ -96,6 +97,7 @@ export class GameEngine {
       ledger: new Map(),
       activeSideBet: null,
       juicerActive: false,
+      antesPostedPerPlayer: 0,
     };
   }
 
@@ -112,14 +114,23 @@ export class GameEngine {
     let seatIndex = 0;
     while (takenSeats.has(seatIndex)) seatIndex++;
 
+    // Late joiner must match missed antes if pot has carried over
+    const catchUpAmount = this.state.antesPostedPerPlayer;
+    const adjustedChips = chips - catchUpAmount;
+
     this.state.players.push({
       id,
       name,
-      chips,
+      chips: adjustedChips,
       seatIndex,
       connected: true,
       buyIn: chips,
     });
+
+    // Add catch-up antes to the pot
+    if (catchUpAmount > 0) {
+      this.state.carryOverPot += catchUpAmount;
+    }
 
     // Initialize ledger
     this.state.ledger.set(id, {
@@ -328,6 +339,9 @@ export class GameEngine {
       this.state.pot += antePerPlayer;
     }
 
+    // Track cumulative antes posted per player since last scoop
+    this.state.antesPostedPerPlayer += antePerPlayer;
+
     // Clear juicer after collecting
     this.state.juicerActive = false;
     this.state.activeSideBet = null;
@@ -468,6 +482,7 @@ export class GameEngine {
       const winner = this.state.players.find(p => p.id === bestNLHE.playerId)!;
       winner.chips += this.state.pot;
       this.state.carryOverPot = 0;
+      this.state.antesPostedPerPlayer = 0;
     } else {
       // No scoop - pot carries over
       this.state.winnerId = null;

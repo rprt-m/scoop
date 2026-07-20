@@ -129,11 +129,11 @@
     }
 
     .seat:nth-child(1) { bottom: -55px; left: 50%; transform: translateX(-50%); }
-    .seat:nth-child(2) { bottom: -20px; left: 3%; }
-    .seat:nth-child(3) { top: 50%; left: 3%; transform: translateY(-50%); }
+    .seat:nth-child(2) { bottom: -20px; left: -2%; }
+    .seat:nth-child(3) { top: 50%; left: -5%; transform: translateY(-50%); }
     .seat:nth-child(4) { top: -55px; left: 50%; transform: translateX(-50%); }
-    .seat:nth-child(5) { top: 50%; right: 3%; transform: translateY(-50%); }
-    .seat:nth-child(6) { bottom: -20px; right: 3%; }
+    .seat:nth-child(5) { top: 50%; right: -5%; transform: translateY(-50%); }
+    .seat:nth-child(6) { bottom: -20px; right: -2%; }
 
     .seat .seat-card {
       display: flex;
@@ -484,7 +484,7 @@
       .seat:nth-child(6) { bottom: -2%; right: 0%; }
 
       /* Player showdown cards - smaller on portrait mobile */
-      .card-small { width: 16px; height: 22px; font-size: 0.35rem; border-radius: 2px; box-shadow: none; }
+      .card-small { width: 14px; height: 20px; font-size: 0.3rem; border-radius: 2px; box-shadow: none; padding: 0; }
       .seat-hands { gap: 0px; margin-bottom: 2px; }
       .seat-hand-row { gap: 0px; }
       .hand-label { display: none; }
@@ -719,6 +719,13 @@
     }
 
     socket.on('connect', () => { myId = socket.id; });
+
+    // Handle reconnection — re-join the table if we have a session
+    socket.on('reconnect', () => {
+      if (tableId && myPlayerId) {
+        socket.emit('joinTable', { tableId, name: '', chips: 0, playerId: myPlayerId });
+      }
+    });
 
     socket.on('session', (data) => {
       // Store persistent playerId in localStorage
