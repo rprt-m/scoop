@@ -107,11 +107,16 @@ export class GameEngine {
     if (this.state.players.length >= 6) return false;
     if (this.state.players.find(p => p.id === id)) return false;
 
+    // Find the first available seat index
+    const takenSeats = new Set(this.state.players.map(p => p.seatIndex));
+    let seatIndex = 0;
+    while (takenSeats.has(seatIndex)) seatIndex++;
+
     this.state.players.push({
       id,
       name,
       chips,
-      seatIndex: this.state.players.length,
+      seatIndex,
       connected: true,
       buyIn: chips,
     });
@@ -125,6 +130,24 @@ export class GameEngine {
       profit: 0,
     });
 
+    return true;
+  }
+
+  /**
+   * Swap a player to an empty seat. Only allowed during waiting phase.
+   */
+  swapSeat(playerId: string, targetSeatIndex: number): boolean {
+    if (this.state.phase !== 'waiting') return false;
+    if (targetSeatIndex < 0 || targetSeatIndex >= 6) return false;
+
+    const player = this.state.players.find(p => p.id === playerId);
+    if (!player) return false;
+
+    // Check if target seat is empty
+    const seatOccupied = this.state.players.some(p => p.seatIndex === targetSeatIndex);
+    if (seatOccupied) return false;
+
+    player.seatIndex = targetSeatIndex;
     return true;
   }
 

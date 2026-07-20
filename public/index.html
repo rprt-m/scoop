@@ -165,6 +165,15 @@
 
     .seat.ready .seat-card { border-color: #4ecdc4; }
 
+    .seat-empty {
+      cursor: pointer;
+      opacity: 0.3;
+      transition: opacity 0.2s;
+    }
+    .seat-empty:hover {
+      opacity: 0.6;
+    }
+
     .seat-hands {
       display: flex;
       flex-direction: column;
@@ -467,16 +476,16 @@
       .seat .chips { font-size: 0.65rem; padding: 2px 8px 3px; border-radius: 0 0 6px 6px; font-weight: 700; }
 
       /* Seat positions for portrait oval - spread out */
-      .seat:nth-child(1) { bottom: -44px; left: 50%; transform: translateX(-50%); }
-      .seat:nth-child(2) { bottom: 2%; left: 0%; }
+      .seat:nth-child(1) { bottom: -46px; left: 50%; transform: translateX(-50%); }
+      .seat:nth-child(2) { bottom: -2%; left: 0%; }
       .seat:nth-child(3) { top: 28%; left: -6%; }
       .seat:nth-child(4) { top: -44px; left: 50%; transform: translateX(-50%); }
       .seat:nth-child(5) { top: 28%; right: -6%; }
-      .seat:nth-child(6) { bottom: 2%; right: 0%; }
+      .seat:nth-child(6) { bottom: -2%; right: 0%; }
 
       /* Player showdown cards - compact */
-      .card-small { width: 22px; height: 30px; font-size: 0.45rem; border-radius: 3px; }
-      .seat-hands { gap: 1px; margin-bottom: 2px; }
+      .card-small { width: 20px; height: 28px; font-size: 0.4rem; border-radius: 3px; }
+      .seat-hands { gap: 1px; margin-bottom: 3px; }
       .seat-hand-row { gap: 1px; }
       .hand-label { display: none; }
 
@@ -1060,15 +1069,21 @@
     function renderSeats(state) {
       const seatsDiv = document.getElementById('seats');
       seatsDiv.innerHTML = '';
+
+      // Build a map of seatIndex → player
+      const seatMap = {};
+      for (const player of state.players) {
+        seatMap[player.seatIndex] = player;
+      }
+
       for (let i = 0; i < 6; i++) {
-        const player = state.players[i];
+        const player = seatMap[i];
         const seat = document.createElement('div');
         seat.className = `seat ${player && state.hands[player.id]?.arranged ? 'ready' : ''}`;
         if (player) {
           if (ploRevealed && state.winnerId === player.id) {
             seat.innerHTML = `<div class="scoop-bubble">🏆 Scoop!</div>`;
           }
-          // At showdown: show cards in a neat stacked layout with NLHE centered over PLO
           if ((state.phase === 'showdown' || state.phase === 'complete') && state.hands[player.id]?.nlheCards) {
             const nlheHtml = state.hands[player.id].nlheCards.map(c => `<div class="card card-small ${getSuitClass(c)}">${formatCard(c)}</div>`).join('');
             let ploHtml = '';
@@ -1082,13 +1097,16 @@
             }
             seat.innerHTML += `</div>`;
           }
-          // Name + chips always at the bottom
           seat.innerHTML += `<div class="seat-card"><div class="name">${player.name}</div><div class="chips">${player.chips}</div></div>`;
         } else {
-          seat.innerHTML = `<div class="seat-card" style="opacity:0.3"><div class="name">Empty</div></div>`;
+          seat.innerHTML = `<div class="seat-card seat-empty" onclick="swapSeat(${i})"><div class="name">Empty</div></div>`;
         }
         seatsDiv.appendChild(seat);
       }
+    }
+
+    function swapSeat(seatIndex) {
+      socket.emit('swapSeat', { seatIndex });
     }
 
     function proposeJuicer() {

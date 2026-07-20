@@ -316,6 +316,19 @@ io.on('connection', (socket) => {
     socket.emit('ledger', table.game.getLedger());
   });
 
+  socket.on('swapSeat', (data: { seatIndex: number }) => {
+    if (!currentTableId || !currentPlayerId) return;
+    const table = tables.get(currentTableId);
+    if (!table) return;
+
+    const success = table.game.swapSeat(currentPlayerId, data.seatIndex);
+    if (success) {
+      const player = table.game.getState().players.find(p => p.id === currentPlayerId);
+      emitToTable(currentTableId, 'message', `${player?.name} moved to seat ${data.seatIndex + 1}`);
+      sendPersonalizedState(table);
+    }
+  });
+
   socket.on('simulate', () => {
     if (!currentTableId || !currentPlayerId) return;
     const table = tables.get(currentTableId);
