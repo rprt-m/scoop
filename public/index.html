@@ -129,11 +129,11 @@
     }
 
     .seat:nth-child(1) { bottom: -55px; left: 50%; transform: translateX(-50%); }
-    .seat:nth-child(2) { bottom: -20px; left: -2%; }
-    .seat:nth-child(3) { top: 50%; left: -5%; transform: translateY(-50%); }
+    .seat:nth-child(2) { bottom: -55px; left: 12%; }
+    .seat:nth-child(3) { top: 50%; left: -8%; transform: translateY(-50%); }
     .seat:nth-child(4) { top: -55px; left: 50%; transform: translateX(-50%); }
-    .seat:nth-child(5) { top: 50%; right: -5%; transform: translateY(-50%); }
-    .seat:nth-child(6) { bottom: -20px; right: -2%; }
+    .seat:nth-child(5) { top: 50%; right: -8%; transform: translateY(-50%); }
+    .seat:nth-child(6) { bottom: -55px; right: 12%; }
 
     .seat .seat-card {
       display: flex;
@@ -463,10 +463,10 @@
       .chip { width: 14px; height: 5px; margin-bottom: -2px; }
 
       /* Board cards - centered, good size for mobile */
-      .board-card-wrapper { width: 44px; height: 60px; }
-      .board-card { width: 44px; height: 60px; }
-      .board-card-face, .board-card-back { font-size: 0.9rem; border-radius: 5px; }
-      .board { gap: 4px; margin-top: -5px; }
+      .board-card-wrapper { width: 32px; height: 44px; }
+      .board-card { width: 32px; height: 44px; }
+      .board-card-face, .board-card-back { font-size: 0.65rem; border-radius: 4px; }
+      .board { gap: 2px; margin-top: -5px; }
 
       /* Seats around the tall oval */
       .seats { z-index: 3; }
@@ -483,9 +483,9 @@
       .seat:nth-child(5) { top: 28%; right: -6%; }
       .seat:nth-child(6) { bottom: -2%; right: 0%; }
 
-      /* Player showdown cards - smaller on portrait mobile */
-      .card-small { width: 14px; height: 20px; font-size: 0.3rem; border-radius: 2px; box-shadow: none; padding: 0; }
-      .seat-hands { gap: 0px; margin-bottom: 2px; }
+      /* Player showdown cards - tiny on portrait mobile */
+      .card-small { width: 12px; height: 17px; font-size: 0.25rem; border-radius: 2px; box-shadow: none; padding: 0; }
+      .seat-hands { gap: 0px; margin-bottom: 1px; }
       .seat-hand-row { gap: 0px; }
       .hand-label { display: none; }
 
