@@ -88,59 +88,67 @@
     .pot-chips {
       display: flex;
       justify-content: center;
-      gap: 4px;
+      gap: 8px;
       margin-bottom: 8px;
       align-items: flex-end;
     }
 
     .chip-stack {
+      position: relative;
       display: flex;
       flex-direction: column;
       align-items: center;
-      position: relative;
     }
 
+    /* Each chip is a 3D-looking disc seen at an angle */
     .chip {
-      width: 26px;
-      height: 6px;
+      width: 28px;
+      height: 16px;
       border-radius: 50%;
-      margin-top: -1px;
       position: relative;
-      box-shadow: 0 2px 1px rgba(0,0,0,0.3);
+      margin-top: -4px;
     }
 
-    .chip:first-child {
-      margin-top: 0;
-      height: 14px;
-      width: 26px;
-      border-radius: 50%;
-      z-index: 10;
-    }
+    .chip:first-child { margin-top: 0; }
 
-    .chip:first-child::before {
+    /* The top face of the chip */
+    .chip::before {
       content: '';
       position: absolute;
-      top: 2px; left: 2px; right: 2px; bottom: 2px;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
       border-radius: 50%;
-      border: 2px dashed rgba(255,255,255,0.5);
+      border: 2px solid rgba(255,255,255,0.3);
     }
 
-    .chip:not(:first-child) {
-      border-left: 1px solid rgba(0,0,0,0.2);
-      border-right: 1px solid rgba(0,0,0,0.2);
-      border-bottom: 1px solid rgba(0,0,0,0.3);
+    /* Dashed inner pattern on top chip only */
+    .chip:last-child::after {
+      content: '';
+      position: absolute;
+      top: 3px; left: 3px; right: 3px; bottom: 3px;
+      border-radius: 50%;
+      border: 1.5px dashed rgba(255,255,255,0.6);
+    }
+
+    /* Edge shadow for depth */
+    .chip:not(:last-child) {
+      box-shadow: 0 3px 1px -1px rgba(0,0,0,0.4);
+    }
+    .chip:last-child {
+      box-shadow: 0 3px 2px rgba(0,0,0,0.3);
     }
 
     .chip-1 { background: #888; }
-    .chip-1:first-child { background: radial-gradient(circle at 45% 40%, #bbb, #666); }
-    .chip-5 { background: #c0392b; }
-    .chip-5:first-child { background: radial-gradient(circle at 45% 40%, #e74c3c, #922b21); }
-    .chip-25 { background: #1e8449; }
-    .chip-25:first-child { background: radial-gradient(circle at 45% 40%, #27ae60, #145a32); }
-    .chip-100 { background: #1a1a2e; }
-    .chip-100:first-child { background: radial-gradient(circle at 45% 40%, #34495e, #1a1a2e); }
+    .chip-1:last-child { background: radial-gradient(ellipse at 50% 40%, #bbb 20%, #777 80%); }
+    .chip-5 { background: #a93226; }
+    .chip-5:last-child { background: radial-gradient(ellipse at 50% 40%, #e74c3c 20%, #922b21 80%); }
+    .chip-25 { background: #1a7a42; }
+    .chip-25:last-child { background: radial-gradient(ellipse at 50% 40%, #27ae60 20%, #145a32 80%); }
+    .chip-100 { background: #222; }
+    .chip-100:last-child { background: radial-gradient(ellipse at 50% 40%, #444 20%, #111 80%); }
     .chip-1000 { background: #b7950b; }
-    .chip-1000:first-child { background: radial-gradient(circle at 45% 40%, #f1c40f, #b7950b); }
+    .chip-1000:last-child { background: radial-gradient(ellipse at 50% 40%, #f4d03f 20%, #b7950b 80%); }
 
     .seats {
       position: absolute;
@@ -492,9 +500,9 @@
 
       /* Pot in upper-center area */
       .pot-display { font-size: 0.75rem; margin-top: -100px; }
-      .pot-chips { gap: 3px; margin-bottom: 6px; }
-      .chip { width: 20px; height: 5px; }
-      .chip:first-child { width: 20px; height: 11px; }
+      .pot-chips { gap: 6px; margin-bottom: 6px; }
+      .chip { width: 22px; height: 12px; margin-top: -3px; }
+      .chip:first-child { margin-top: 0; }
 
       /* Board cards - larger, upper center */
       .board-card-wrapper { width: 42px; height: 58px; }
