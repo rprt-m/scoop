@@ -216,6 +216,14 @@ io.on('connection', (socket) => {
     table.readyForNext.add(currentPlayerId);
     const player = table.game.getState().players.find(p => p.id === currentPlayerId);
     emitToTable(currentTableId, 'message', `${player?.name} is ready for next hand`);
+
+    // Auto-vote bots
+    for (const p of table.game.getState().players) {
+      if (p.id.startsWith('bot-')) {
+        table.readyForNext.add(p.id);
+      }
+    }
+
     emitToTable(currentTableId, 'readyForNext', Array.from(table.readyForNext));
 
     // Check if ALL connected players are ready
