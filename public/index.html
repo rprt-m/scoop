@@ -797,7 +797,11 @@
     }
 
     function simulate() {
-      socket.emit('simulate');
+      const count = prompt('How many bots? (1-5)', '1');
+      if (count && parseInt(count) > 0) {
+        const numBots = Math.min(5, Math.max(1, parseInt(count)));
+        socket.emit('simulate', { botCount: numBots });
+      }
     }
 
     function showAddChips() {
