@@ -88,67 +88,14 @@
     .pot-chips {
       display: flex;
       justify-content: center;
-      gap: 8px;
+      gap: 4px;
       margin-bottom: 8px;
       align-items: flex-end;
     }
 
     .chip-stack {
       position: relative;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
     }
-
-    /* Each chip is a 3D-looking disc seen at an angle */
-    .chip {
-      width: 28px;
-      height: 16px;
-      border-radius: 50%;
-      position: relative;
-      margin-top: -4px;
-    }
-
-    .chip:first-child { margin-top: 0; }
-
-    /* The top face of the chip */
-    .chip::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-      border: 2px solid rgba(255,255,255,0.3);
-    }
-
-    /* Dashed inner pattern on top chip only */
-    .chip:last-child::after {
-      content: '';
-      position: absolute;
-      top: 3px; left: 3px; right: 3px; bottom: 3px;
-      border-radius: 50%;
-      border: 1.5px dashed rgba(255,255,255,0.6);
-    }
-
-    /* Edge shadow for depth */
-    .chip:not(:last-child) {
-      box-shadow: 0 3px 1px -1px rgba(0,0,0,0.4);
-    }
-    .chip:last-child {
-      box-shadow: 0 3px 2px rgba(0,0,0,0.3);
-    }
-
-    .chip-1 { background: #888; }
-    .chip-1:last-child { background: radial-gradient(ellipse at 50% 40%, #bbb 20%, #777 80%); }
-    .chip-5 { background: #a93226; }
-    .chip-5:last-child { background: radial-gradient(ellipse at 50% 40%, #e74c3c 20%, #922b21 80%); }
-    .chip-25 { background: #1a7a42; }
-    .chip-25:last-child { background: radial-gradient(ellipse at 50% 40%, #27ae60 20%, #145a32 80%); }
-    .chip-100 { background: #222; }
-    .chip-100:last-child { background: radial-gradient(ellipse at 50% 40%, #444 20%, #111 80%); }
-    .chip-1000 { background: #b7950b; }
-    .chip-1000:last-child { background: radial-gradient(ellipse at 50% 40%, #f4d03f 20%, #b7950b 80%); }
 
     .seats {
       position: absolute;
@@ -500,9 +447,8 @@
 
       /* Pot in upper-center area */
       .pot-display { font-size: 0.75rem; margin-top: -100px; }
-      .pot-chips { gap: 6px; margin-bottom: 6px; }
-      .chip { width: 22px; height: 12px; margin-top: -3px; }
-      .chip:first-child { margin-top: 0; }
+      .pot-chips { gap: 3px; margin-bottom: 6px; }
+      .chip-stack svg { width: 24px; height: auto; }
 
       /* Board cards - larger, upper center */
       .board-card-wrapper { width: 42px; height: 58px; }
@@ -1300,13 +1246,12 @@
       const container = document.getElementById('potChips');
       if (amount <= 0) { container.innerHTML = ''; return; }
 
-      // Break down into chip denominations
       const denoms = [
-        { value: 1000, cls: 'chip-1000' },
-        { value: 100, cls: 'chip-100' },
-        { value: 25, cls: 'chip-25' },
-        { value: 5, cls: 'chip-5' },
-        { value: 1, cls: 'chip-1' },
+        { value: 1000, fill: '#f1c40f', rim: '#b7950b' },
+        { value: 100, fill: '#2c3e50', rim: '#1a252f' },
+        { value: 25, fill: '#27ae60', rim: '#1e8449' },
+        { value: 5, fill: '#e74c3c', rim: '#c0392b' },
+        { value: 1, fill: '#ecf0f1', rim: '#bdc3c7' },
       ];
 
       let remaining = amount;
@@ -1315,15 +1260,34 @@
       for (const denom of denoms) {
         const count = Math.floor(remaining / denom.value);
         if (count > 0) {
-          // Cap visual chips per stack at 8 for readability
-          stacks.push({ cls: denom.cls, count: Math.min(count, 8) });
+          stacks.push({ fill: denom.fill, rim: denom.rim, count: Math.min(count, 6) });
           remaining -= count * denom.value;
         }
       }
 
+      // Build SVG for each stack
+      const chipSize = 32;
+      const stackOffset = 6; // vertical offset per chip in stack
+      
       container.innerHTML = stacks.map(stack => {
-        const chips = Array(stack.count).fill(`<div class="chip ${stack.cls}"></div>`).join('');
-        return `<div class="chip-stack">${chips}</div>`;
+        const svgHeight = chipSize + (stack.count - 1) * stackOffset + 8;
+        const svgWidth = chipSize + 4;
+        let chips = '';
+        
+        for (let i = 0; i < stack.count; i++) {
+          const y = svgHeight - chipSize - (i * stackOffset);
+          const isTop = (i === stack.count - 1);
+          chips += `
+            <g transform="translate(2, ${y})">
+              ${!isTop ? '' : `<ellipse cx="${chipSize/2}" cy="${chipSize + 2}" rx="${chipSize/2 - 2}" ry="3" fill="#000" opacity="0.2"/>`}
+              <circle cx="${chipSize/2}" cy="${chipSize/2}" r="${chipSize/2 - 2}" fill="${stack.fill}"/>
+              <circle cx="${chipSize/2}" cy="${chipSize/2}" r="${chipSize/2 - 2}" fill="none" stroke="${stack.rim}" stroke-width="3"/>
+              <circle cx="${chipSize/2}" cy="${chipSize/2}" r="${chipSize/2 - 7}" fill="none" stroke="#fff" stroke-width="2" stroke-dasharray="4 5" stroke-linecap="round" opacity="0.7"/>
+            </g>
+          `;
+        }
+
+        return `<div class="chip-stack"><svg width="${svgWidth}" height="${svgHeight}" viewBox="0 0 ${svgWidth} ${svgHeight}" xmlns="http://www.w3.org/2000/svg">${chips}</svg></div>`;
       }).join('');
     }
 
