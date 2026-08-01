@@ -478,7 +478,7 @@
       .seat:nth-child(6) { bottom: 22%; right: -6%; }
 
       /* Player showdown cards - overlapping stack to save space */
-      .card-small { width: 10px; height: 14px; font-size: 0.2rem; border-radius: 1px; box-shadow: none; padding: 0; position: relative; }
+      .card.card-small { width: 10px !important; height: 14px !important; font-size: 0.2rem; border-radius: 1px; box-shadow: none; padding: 0; position: relative; }
       .seat-hands { gap: 0px; margin-bottom: 2px; }
       .seat-hand-row { gap: 0px; }
       .seat-hand-row:first-child { margin-bottom: -5px; position: relative; z-index: 1; }
@@ -541,7 +541,7 @@
       .board-card-face, .board-card-back { font-size: 0.7rem; }
       .card { width: 36px; height: 50px; font-size: 0.7rem; }
       .slot { width: 36px; height: 50px; }
-      .card-small { width: 20px; height: 28px; font-size: 0.4rem; }
+      .card.card-small { width: 10px !important; height: 14px !important; font-size: 0.2rem; }
       .btn { padding: 6px 9px; font-size: 0.65rem; }
       .seat .name { font-size: 0.5rem; padding: 2px 5px; }
       .seat .chips { font-size: 0.55rem; padding: 2px 5px; }
@@ -735,6 +735,12 @@
 
     socket.on('gameState', (state) => {
       currentState = state;
+
+      // If reconnecting to a completed/showdown state with full board, reveal PLO immediately
+      if ((state.phase === 'complete' || state.phase === 'showdown') && state.board && state.board.length === 5) {
+        ploRevealed = true;
+      }
+
       render(state);
     });
 
