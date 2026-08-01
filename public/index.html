@@ -88,14 +88,14 @@
     .pot-chips {
       display: flex;
       justify-content: center;
-      gap: 2px;
+      gap: 6px;
       margin-bottom: 6px;
       align-items: flex-end;
     }
 
     .chip-stack {
       display: flex;
-      flex-direction: column-reverse;
+      flex-direction: column;
       align-items: center;
     }
 
@@ -103,10 +103,12 @@
       width: 24px;
       height: 24px;
       border-radius: 50%;
-      margin-bottom: -14px;
+      margin-top: -14px;
       position: relative;
       box-shadow: 0 3px 4px rgba(0,0,0,0.4);
     }
+
+    .chip:first-child { margin-top: 0; }
 
     .chip::before {
       content: '';
@@ -123,8 +125,6 @@
       border-radius: 50%;
       border: 2px solid rgba(255,255,255,0.3);
     }
-
-    .chip:last-child { margin-bottom: 0; }
 
     .chip-1 { background: radial-gradient(circle at 40% 35%, #aaa, #666); }
     .chip-5 { background: radial-gradient(circle at 40% 35%, #e74c3c, #a93226); }
