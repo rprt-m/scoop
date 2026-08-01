@@ -448,7 +448,7 @@
       /* Pot in upper-center area */
       .pot-display { font-size: 0.75rem; margin-top: -100px; }
       .pot-chips { gap: 3px; margin-bottom: 6px; }
-      .chip-stack svg { width: 24px; height: auto; }
+      .chip-stack svg { width: 30px; height: auto; }
 
       /* Board cards - larger, upper center */
       .board-card-wrapper { width: 42px; height: 58px; }
@@ -1247,48 +1247,83 @@
       if (amount <= 0) { container.innerHTML = ''; return; }
 
       const denoms = [
-        { value: 1000, fill: '#f1c40f', rim: '#b7950b' },
-        { value: 100, fill: '#2c3e50', rim: '#1a252f' },
-        { value: 25, fill: '#27ae60', rim: '#1e8449' },
-        { value: 5, fill: '#e74c3c', rim: '#c0392b' },
-        { value: 1, fill: '#ecf0f1', rim: '#bdc3c7' },
+        { value: 1000, fill: '#f1c40f', dark: '#b7950b', edge: '#d4ac0d' },
+        { value: 100, fill: '#2c3e50', dark: '#1a252f', edge: '#34495e' },
+        { value: 25, fill: '#27ae60', dark: '#1e8449', edge: '#229954' },
+        { value: 5, fill: '#e74c3c', dark: '#c0392b', edge: '#cb4335' },
+        { value: 1, fill: '#bdc3c7', dark: '#95a5a6', edge: '#aab7b8' },
       ];
 
+      // Build a single stack of chips (bottom to top, largest denom on top)
       let remaining = amount;
-      const stacks = [];
+      const chips = [];
 
       for (const denom of denoms) {
         const count = Math.floor(remaining / denom.value);
         if (count > 0) {
-          stacks.push({ fill: denom.fill, rim: denom.rim, count: Math.min(count, 6) });
+          const visual = Math.min(count, 5);
+          for (let i = 0; i < visual; i++) {
+            chips.push(denom);
+          }
           remaining -= count * denom.value;
         }
       }
 
-      // Build SVG for each stack
-      const chipSize = 32;
-      const stackOffset = 6; // vertical offset per chip in stack
-      
-      container.innerHTML = stacks.map(stack => {
-        const svgHeight = chipSize + (stack.count - 1) * stackOffset + 8;
-        const svgWidth = chipSize + 4;
-        let chips = '';
-        
-        for (let i = 0; i < stack.count; i++) {
-          const y = svgHeight - chipSize - (i * stackOffset);
-          const isTop = (i === stack.count - 1);
-          chips += `
-            <g transform="translate(2, ${y})">
-              ${!isTop ? '' : `<ellipse cx="${chipSize/2}" cy="${chipSize + 2}" rx="${chipSize/2 - 2}" ry="3" fill="#000" opacity="0.2"/>`}
-              <circle cx="${chipSize/2}" cy="${chipSize/2}" r="${chipSize/2 - 2}" fill="${stack.fill}"/>
-              <circle cx="${chipSize/2}" cy="${chipSize/2}" r="${chipSize/2 - 2}" fill="none" stroke="${stack.rim}" stroke-width="3"/>
-              <circle cx="${chipSize/2}" cy="${chipSize/2}" r="${chipSize/2 - 7}" fill="none" stroke="#fff" stroke-width="2" stroke-dasharray="4 5" stroke-linecap="round" opacity="0.7"/>
-            </g>
-          `;
+      // Reverse so largest denomination is on top
+      chips.reverse();
+
+      if (chips.length === 0) { container.innerHTML = ''; return; }
+
+      const chipHeight = 8;
+      const topHeight = 6;
+      const chipWidth = 40;
+      const ellipseRx = chipWidth / 2;
+      const ellipseRy = 10;
+      const totalHeight = (chips.length * chipHeight) + ellipseRy + topHeight + 12;
+      const cx = chipWidth / 2 + 4;
+      const svgWidth = chipWidth + 8;
+
+      let svg = `<svg width="${svgWidth}" height="${totalHeight}" viewBox="0 0 ${svgWidth} ${totalHeight}" xmlns="http://www.w3.org/2000/svg">`;
+
+      // Shadow at base
+      const baseY = totalHeight - 6;
+      svg += `<ellipse cx="${cx}" cy="${baseY}" rx="${ellipseRx + 2}" ry="5" fill="#000" opacity="0.3"/>`;
+
+      // Draw chips from bottom to top
+      for (let i = 0; i < chips.length; i++) {
+        const chip = chips[i];
+        const y = totalHeight - 12 - ((i + 1) * chipHeight);
+
+        // Chip edge (cylinder side)
+        svg += `<ellipse cx="${cx}" cy="${y + chipHeight}" rx="${ellipseRx}" ry="${ellipseRy}" fill="${chip.dark}"/>`;
+        svg += `<rect x="${cx - ellipseRx}" y="${y}" width="${chipWidth}" height="${chipHeight}" fill="${chip.edge}"/>`;
+
+        // White notches on the edge
+        for (let n = 0; n < 6; n++) {
+          const angle = (n / 6) * Math.PI;
+          const nx = cx + Math.cos(angle) * (ellipseRx - 1);
+          const nw = 3;
+          if (nx > cx - ellipseRx + 2 && nx < cx + ellipseRx - 2) {
+            svg += `<rect x="${nx - nw/2}" y="${y}" width="${nw}" height="${chipHeight}" fill="#fff" opacity="0.7" rx="1"/>`;
+          }
         }
 
-        return `<div class="chip-stack"><svg width="${svgWidth}" height="${svgHeight}" viewBox="0 0 ${svgWidth} ${svgHeight}" xmlns="http://www.w3.org/2000/svg">${chips}</svg></div>`;
-      }).join('');
+        // Top ellipse of this chip (hidden by chip above, except for the last one)
+        svg += `<ellipse cx="${cx}" cy="${y}" rx="${ellipseRx}" ry="${ellipseRy}" fill="${chip.fill}"/>`;
+      }
+
+      // Top chip face detail
+      const topY = totalHeight - 12 - (chips.length * chipHeight);
+      const topChip = chips[chips.length - 1];
+
+      // Dashed ring on top face
+      svg += `<ellipse cx="${cx}" cy="${topY}" rx="${ellipseRx - 6}" ry="${ellipseRy - 3}" fill="none" stroke="#fff" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.6"/>`;
+      // Inner ellipse
+      svg += `<ellipse cx="${cx}" cy="${topY}" rx="${ellipseRx - 10}" ry="${ellipseRy - 5}" fill="${topChip.dark}" opacity="0.4"/>`;
+
+      svg += `</svg>`;
+
+      container.innerHTML = `<div class="chip-stack">${svg}</div>`;
     }
 
     function renderResults(state) {
