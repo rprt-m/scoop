@@ -113,11 +113,10 @@
     }
 
     .seat:nth-child(1) { bottom: -55px; left: 50%; transform: translateX(-50%); }
-    .seat:nth-child(2) { bottom: -55px; left: 12%; }
-    .seat:nth-child(3) { top: 50%; left: -8%; transform: translateY(-50%); }
-    .seat:nth-child(4) { top: -55px; left: 50%; transform: translateX(-50%); }
-    .seat:nth-child(5) { top: 50%; right: -8%; transform: translateY(-50%); }
-    .seat:nth-child(6) { bottom: -55px; right: 12%; }
+    .seat:nth-child(2) { bottom: -20px; left: -2%; }
+    .seat:nth-child(3) { top: 15%; left: -8%; }
+    .seat:nth-child(4) { top: 15%; right: -8%; }
+    .seat:nth-child(5) { bottom: -20px; right: -2%; }
 
     .seat .seat-card {
       display: flex;
@@ -463,19 +462,17 @@
       .seat .name { font-size: 0.6rem; padding: 3px 8px; border-radius: 6px 6px 0 0; }
       .seat .chips { font-size: 0.65rem; padding: 2px 8px 3px; border-radius: 0 0 6px 6px; font-weight: 700; }
 
-      /* Seat positions - clock layout (each seat at a different hour) */
+      /* Seat positions - clock layout */
       /* Seat 1 = 6 o'clock (bottom center) */
       .seat:nth-child(1) { bottom: -46px; left: 50%; transform: translateX(-50%); }
-      /* Seat 2 = 8:45 o'clock (left, slightly below middle) */
-      .seat:nth-child(2) { bottom: 22%; left: -6%; }
+      /* Seat 2 = 7:30 (lower-left) */
+      .seat:nth-child(2) { bottom: 18%; left: -6%; }
       /* Seat 3 = 10 o'clock (upper-left) */
-      .seat:nth-child(3) { top: 12%; left: -6%; }
-      /* Seat 4 = 12 o'clock (top center) */
-      .seat:nth-child(4) { top: -46px; left: 50%; transform: translateX(-50%); }
-      /* Seat 5 = 2 o'clock (upper-right) */
-      .seat:nth-child(5) { top: 12%; right: -6%; }
-      /* Seat 6 = 3:45 o'clock (right, slightly below middle) */
-      .seat:nth-child(6) { bottom: 22%; right: -6%; }
+      .seat:nth-child(3) { top: 14%; left: -6%; }
+      /* Seat 4 = 1:30 (upper-right) */
+      .seat:nth-child(4) { top: 14%; right: -6%; }
+      /* Seat 5 = 4 o'clock (middle-right) */
+      .seat:nth-child(5) { bottom: 30%; right: -6%; }
 
       /* Player showdown cards on table - smaller for mobile vertical */
       .seat-hands .seat-hand-row .card { 
@@ -812,7 +809,7 @@
     }
 
     function simulate() {
-      const count = prompt('How many bots? (1-5)', '1');
+      const count = prompt('How many bots? (1-4)', '1');
       if (count && parseInt(count) > 0) {
         const numBots = Math.min(5, Math.max(1, parseInt(count)));
         socket.emit('simulate', { botCount: numBots });
