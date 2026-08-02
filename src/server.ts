@@ -350,13 +350,13 @@ io.on('connection', (socket) => {
       return;
     }
 
-    const botCount = Math.min(5, Math.max(1, data?.botCount || 1));
+    const botCount = Math.min(4, Math.max(1, data?.botCount || 1));
     const botNames = ['Bot_Alice', 'Bot_Bob', 'Bot_Charlie', 'Bot_Dave', 'Bot_Eve'];
     const addedBots: string[] = [];
 
     // Add bots (up to table capacity)
     for (let i = 0; i < botCount; i++) {
-      if (table.game.getState().players.length >= 6) break;
+      if (table.game.getState().players.length >= 5) break;
 
       const botId = `bot-${crypto.randomBytes(4).toString('hex')}`;
       const botName = botNames[i % botNames.length];

@@ -106,7 +106,7 @@ export class GameEngine {
   }
 
   addPlayer(id: string, name: string, chips: number): boolean {
-    if (this.state.players.length >= 6) return false;
+    if (this.state.players.length >= 5) return false;
     if (this.state.players.find(p => p.id === id)) return false;
 
     // Find the first available seat index
@@ -149,7 +149,7 @@ export class GameEngine {
    */
   swapSeat(playerId: string, targetSeatIndex: number): boolean {
     if (this.state.phase !== 'waiting') return false;
-    if (targetSeatIndex < 0 || targetSeatIndex >= 6) return false;
+    if (targetSeatIndex < 0 || targetSeatIndex >= 5) return false;
 
     const player = this.state.players.find(p => p.id === playerId);
     if (!player) return false;
