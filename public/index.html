@@ -1031,8 +1031,13 @@
       nlheSlotsDiv.innerHTML = '';
       for (let i = 0; i < 2; i++) {
         if (nlheCards[i]) {
-          const isSelected = selectedCard && selectedCard.card === nlheCards[i];
-          nlheSlotsDiv.innerHTML += `<div class="card card-small ${getSuitClass(nlheCards[i])} ${isSelected ? 'card-selected' : ''}" onclick="selectSlotCard('nlhe', ${i})">${formatCard(nlheCards[i])}</div>`;
+          const isFacedown = sweatMode && !revealedCards.has(nlheCards[i]);
+          if (isFacedown) {
+            nlheSlotsDiv.innerHTML += `<div class="card card-small facedown-sweat" onclick="revealCard('${nlheCards[i]}')"></div>`;
+          } else {
+            const isSelected = selectedCard && selectedCard.card === nlheCards[i];
+            nlheSlotsDiv.innerHTML += `<div class="card card-small ${getSuitClass(nlheCards[i])} ${isSelected ? 'card-selected' : ''}" onclick="selectSlotCard('nlhe', ${i})">${formatCard(nlheCards[i])}</div>`;
+          }
         } else {
           const canPlace = selectedCard ? 'slot-active' : '';
           nlheSlotsDiv.innerHTML += `<div class="slot ${canPlace}" onclick="selectSlotCard('nlhe', ${i})">—</div>`;
@@ -1043,8 +1048,13 @@
       ploSlotsDiv.innerHTML = '';
       for (let i = 0; i < 4; i++) {
         if (ploCards[i]) {
-          const isSelected = selectedCard && selectedCard.card === ploCards[i];
-          ploSlotsDiv.innerHTML += `<div class="card card-small ${getSuitClass(ploCards[i])} ${isSelected ? 'card-selected' : ''}" onclick="selectSlotCard('plo', ${i})">${formatCard(ploCards[i])}</div>`;
+          const isFacedown = sweatMode && !revealedCards.has(ploCards[i]);
+          if (isFacedown) {
+            ploSlotsDiv.innerHTML += `<div class="card card-small facedown-sweat" onclick="revealCard('${ploCards[i]}')"></div>`;
+          } else {
+            const isSelected = selectedCard && selectedCard.card === ploCards[i];
+            ploSlotsDiv.innerHTML += `<div class="card card-small ${getSuitClass(ploCards[i])} ${isSelected ? 'card-selected' : ''}" onclick="selectSlotCard('plo', ${i})">${formatCard(ploCards[i])}</div>`;
+          }
         } else {
           const canPlace = selectedCard ? 'slot-active' : '';
           ploSlotsDiv.innerHTML += `<div class="slot ${canPlace}" onclick="selectSlotCard('plo', ${i})">—</div>`;
