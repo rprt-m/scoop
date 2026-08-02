@@ -478,18 +478,19 @@
       .seat:nth-child(6) { bottom: 22%; right: -6%; }
 
       /* Player showdown cards on table - smaller for mobile vertical */
-      .seat-hands .card.card-small { 
-        width: 18px !important; 
-        height: 24px !important; 
-        font-size: 0.3rem !important; 
-        border-radius: 2px !important; 
+      .seat-hands .seat-hand-row .card { 
+        width: 13px !important; 
+        height: 17px !important; 
+        font-size: 0.2rem !important; 
+        border-radius: 1px !important; 
         padding: 0 !important;
         min-width: 0 !important;
         box-shadow: none !important;
+        line-height: 1 !important;
       }
       .seat-hands { gap: 0px; margin-bottom: 2px; }
       .seat-hand-row { gap: 0px; }
-      .seat-hand-row:first-child { margin-bottom: -9px; position: relative; z-index: 1; }
+      .seat-hand-row:first-child { margin-bottom: -6px; position: relative; z-index: 1; }
       .seat-hand-row:last-child { position: relative; z-index: 2; }
       .hand-label { display: none; }
 
@@ -549,7 +550,7 @@
       .board-card-face, .board-card-back { font-size: 0.7rem; }
       .card { width: 36px; height: 50px; font-size: 0.7rem; }
       .slot { width: 36px; height: 50px; }
-      .seat-hands .card.card-small { width: 18px !important; height: 24px !important; font-size: 0.3rem !important; }
+      .seat-hands .seat-hand-row .card { width: 13px !important; height: 17px !important; font-size: 0.2rem !important; }
       .btn { padding: 6px 9px; font-size: 0.65rem; }
       .seat .name { font-size: 0.5rem; padding: 2px 5px; }
       .seat .chips { font-size: 0.55rem; padding: 2px 5px; }
