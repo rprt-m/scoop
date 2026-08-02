@@ -174,13 +174,14 @@ io.on('connection', (socket) => {
 
         // Schedule turn after 1.2s
         const tId = currentTableId;
+        // Schedule turn after 3s
         setTimeout(() => {
           const t = tables.get(tId);
           if (!t) return;
           t.game.dealTurn();
           emitToTable(tId, 'gameState', t.game.getPublicState());
 
-          // Schedule river after another 1.2s
+          // Schedule river after another 3s
           setTimeout(() => {
             const t2 = tables.get(tId);
             if (!t2) return;
@@ -197,8 +198,8 @@ io.on('connection', (socket) => {
 
             // Send updated ledger
             emitToTable(tId, 'ledger', t2.game.getLedger());
-          }, 1200);
-        }, 1200);
+          }, 3000);
+        }, 3000);
       } else {
         sendPersonalizedState(table);
       }

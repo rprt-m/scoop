@@ -861,9 +861,11 @@
       // First 2 go to NLHE, last 4 go to PLO
       nlheCards = [cards[0], cards[1]];
       ploCards = [cards[2], cards[3], cards[4], cards[5]];
+      selectedCard = null;
 
-      // Don't reveal them — they stay facedown until confirmed
       updateArrangementUI();
+      // Force enable confirm button
+      document.getElementById('confirmBtn').disabled = false;
     }
 
     // Load sweat preference
