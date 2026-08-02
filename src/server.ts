@@ -164,6 +164,10 @@ io.on('connection', (socket) => {
     if (!table) return;
 
     const success = table.game.arrangeCards(currentPlayerId, data.nlheCards, data.ploCards);
+    if (!success) {
+      const hand = table.game.getState().playerHands.get(currentPlayerId);
+      console.log('arrangeCards FAILED:', { playerId: currentPlayerId, phase: table.game.getState().phase, hasHand: !!hand, dealt: hand?.allCards, sent: [...data.nlheCards, ...data.ploCards] });
+    }
     if (success) {
       const player = table.game.getState().players.find(p => p.id === currentPlayerId);
       emitToTable(currentTableId, 'message', `${player?.name} is ready`);

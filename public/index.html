@@ -762,7 +762,12 @@
     });
 
     socket.on('message', (msg) => { addMessage(msg); });
-    socket.on('error', (msg) => { addMessage('⚠️ ' + msg); });
+    socket.on('error', (msg) => {
+      addMessage('⚠️ ' + msg);
+      if (msg.includes('Invalid card') && currentState?.phase === 'arranging') {
+        document.getElementById('arrangementArea').style.display = 'block';
+      }
+    });
 
     function createTable() {
       const ante = parseInt(document.getElementById('lobbyAnte').value) || 5;
@@ -1255,12 +1260,12 @@
       const currentCount = boardDiv.children.length;
 
       if (currentCount === 0 && board.length > 0) {
-        // First batch (flop) — animate each card in with small stagger
+        // First batch (flop) — 1 second per card
         boardDiv.innerHTML = '';
         board.forEach((card, index) => {
           const wrapper = createBoardCard(card);
           boardDiv.appendChild(wrapper);
-          const delay = 200 + (index * 200);
+          const delay = 500 + (index * 1000);
           setTimeout(() => { wrapper.querySelector('.board-card').classList.add('revealed'); }, delay);
         });
         animatedBoardCards = [...board];
