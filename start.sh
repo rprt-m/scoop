@@ -27,34 +27,33 @@ if [ -f "$NGINX_CONF" ]; then
   fi
 fi
 
-# Restart the app service if it exists
-if systemctl is-active --quiet scoop-poker 2>/dev/null; then
-  echo ""
-  echo "  Restarting scoop-poker service..."
-  sudo systemctl restart scoop-poker
-  echo -e "  ${GREEN}[✓] Service restarted${NC}"
+# Kill any existing and start fresh with logging
+echo ""
+echo "  Starting server..."
+
+# Stop systemd service if running
+systemctl stop scoop-poker 2>/dev/null || true
+
+# Kill any existing instance on port 3001
+fuser -k 3001/tcp 2>/dev/null || true
+sleep 1
+
+LOG_FILE="${APP_DIR}/server.log"
+echo "" > "$LOG_FILE"
+
+cd "$APP_DIR"
+echo -e "  ${GREEN}Starting server...${NC}"
+echo -e "  Logs: ${LOG_FILE}"
+npx ts-node src/server.ts >> "$LOG_FILE" 2>&1 &
+APP_PID=$!
+sleep 2
+
+if kill -0 $APP_PID 2>/dev/null; then
+  echo -e "  ${GREEN}[✓] Server running (PID: $APP_PID)${NC}"
 else
-  # No systemd service — run directly
-  echo ""
-  echo "  No systemd service found. Starting directly..."
-  cd "$APP_DIR"
-  
-  # Kill any existing instance on port 3001
-  fuser -k 3001/tcp 2>/dev/null || true
-  sleep 1
-  
-  echo -e "  ${GREEN}Starting server...${NC}"
-  echo -e "  Logs: ${APP_DIR}/server.log"
-  npx ts-node src/server.ts >> "${APP_DIR}/server.log" 2>&1 &
-  APP_PID=$!
-  sleep 2
-  
-  if kill -0 $APP_PID 2>/dev/null; then
-    echo -e "  ${GREEN}[✓] Server running (PID: $APP_PID)${NC}"
-  else
-    echo "  [!] Server failed to start"
-    exit 1
-  fi
+  echo "  [!] Server failed to start. Check server.log"
+  cat "$LOG_FILE"
+  exit 1
 fi
 
 echo ""
