@@ -44,7 +44,8 @@ else
   sleep 1
   
   echo -e "  ${GREEN}Starting server...${NC}"
-  npx ts-node src/server.ts &
+  echo -e "  Logs: ${APP_DIR}/server.log"
+  npx ts-node src/server.ts >> "${APP_DIR}/server.log" 2>&1 &
   APP_PID=$!
   sleep 2
   
