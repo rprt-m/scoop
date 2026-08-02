@@ -471,8 +471,8 @@
       .seat:nth-child(3) { top: 14%; left: -6%; }
       /* Seat 4 = 1:30 (upper-right) */
       .seat:nth-child(4) { top: 14%; right: -6%; }
-      /* Seat 5 = 4 o'clock (middle-right) */
-      .seat:nth-child(5) { bottom: 30%; right: -6%; }
+      /* Seat 5 = 4 o'clock (lower-right, same level as seat 2) */
+      .seat:nth-child(5) { bottom: 18%; right: -6%; }
 
       /* Player showdown cards on table - smaller for mobile vertical */
       .seat-hands .seat-hand-row .card { 
@@ -627,6 +627,7 @@
         </div>
         <div class="controls">
           <button class="btn btn-primary" id="confirmBtn" onclick="confirmArrangement()" disabled>Confirm Arrangement</button>
+          <button class="btn btn-secondary" id="randomAllocBtn" onclick="randomAllocate()" style="display:none;">🎲 Random</button>
         </div>
       </div>
 
@@ -846,6 +847,25 @@
       updateArrangementUI();
     }
 
+    function randomAllocate() {
+      const myHand = currentState?.hands?.[myPlayerId];
+      if (!myHand || !myHand.allCards) return;
+
+      // Shuffle the 6 cards randomly
+      const cards = [...myHand.allCards];
+      for (let i = cards.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [cards[i], cards[j]] = [cards[j], cards[i]];
+      }
+
+      // First 2 go to NLHE, last 4 go to PLO
+      nlheCards = [cards[0], cards[1]];
+      ploCards = [cards[2], cards[3], cards[4], cards[5]];
+
+      // Don't reveal them — they stay facedown until confirmed
+      updateArrangementUI();
+    }
+
     // Load sweat preference
     if (localStorage.getItem('scoop-sweat-mode') === '1') {
       sweatMode = true;
@@ -1058,6 +1078,7 @@
 
       if (state.phase === 'arranging' && state.hands[myPlayerId]?.allCards) {
         document.getElementById('arrangementArea').style.display = 'block';
+        document.getElementById('randomAllocBtn').style.display = sweatMode ? 'inline-block' : 'none';
         updateArrangementUI();
       } else {
         document.getElementById('arrangementArea').style.display = 'none';
