@@ -645,7 +645,7 @@
         <button class="btn btn-secondary" onclick="showAddChips()">Add Chips</button>
         <button class="btn btn-secondary" onclick="showLedger()">Ledger</button>
         <button class="btn btn-secondary" id="sweatBtn" onclick="toggleSweatMode()" style="background:#1a1a2e; border-color:#6c5ce7; color:#6c5ce7;">👁 Sweat: OFF</button>
-        <button class="btn btn-secondary" onclick="simulate()" style="background:#1a2a1a; border-color:#27ae60; color:#27ae60;">🤖 Simulate</button>
+        <!-- <button class="btn btn-secondary" onclick="simulate()" style="background:#1a2a1a; border-color:#27ae60; color:#27ae60;">🤖 Simulate</button> -->
         <button class="btn btn-danger" onclick="leaveTable()">Leave Table</button>
       </div>
 
@@ -932,12 +932,9 @@
     function confirmArrangement() {
       const filledNlhe = nlheCards.filter(Boolean);
       const filledPlo = ploCards.filter(Boolean);
-      addMessage(`[DEBUG] Confirm: NLHE=${filledNlhe.length}, PLO=${filledPlo.length}, cards=${JSON.stringify([...filledNlhe, ...filledPlo])}`);
       if (filledNlhe.length === 2 && filledPlo.length === 4) {
         socket.emit('arrangeCards', { nlheCards: filledNlhe, ploCards: filledPlo });
         document.getElementById('arrangementArea').style.display = 'none';
-      } else {
-        addMessage(`[DEBUG] Not sending — need 2+4, got ${filledNlhe.length}+${filledPlo.length}`);
       }
     }
 
@@ -1295,12 +1292,12 @@
         }
         animatedBoardCards = [...board];
 
-        // River just arrived — reveal PLO after flip animation completes
+        // River just arrived — reveal PLO after river card is fully visible
         if (board.length === 5) {
           setTimeout(() => {
             ploRevealed = true;
             if (currentState) render(currentState);
-          }, 800); // wait for river card flip animation
+          }, 1500); // wait for river flip + pause before revealing hands
         }
       }
     }

@@ -4,6 +4,7 @@ import { Server } from 'socket.io';
 import path from 'path';
 import crypto from 'crypto';
 import { GameEngine } from './game/gameEngine';
+import { TableLogger, HandLog } from './game/tableLogger';
 
 const app = express();
 const server = createServer(app);
@@ -19,6 +20,7 @@ interface TableRoom {
   game: GameEngine;
   readyForNext: Set<string>;  // uses playerId
   createdAt: Date;
+  logger: TableLogger;
   // Session management
   playerSockets: Map<string, string>;   // playerId → socketId
   socketPlayers: Map<string, string>;   // socketId → playerId
@@ -44,6 +46,7 @@ app.get('/api/create-table', (req, res) => {
     game: new GameEngine(ante),
     readyForNext: new Set(),
     createdAt: new Date(),
+    logger: new TableLogger(id, ante),
     playerSockets: new Map(),
     socketPlayers: new Map(),
     disconnectTimers: new Map(),
@@ -165,18 +168,7 @@ io.on('connection', (socket) => {
 
     const success = table.game.arrangeCards(currentPlayerId, data.nlheCards, data.ploCards);
     if (!success) {
-      const hand = table.game.getState().playerHands.get(currentPlayerId);
-      const phase = table.game.getState().phase;
-      console.log('arrangeCards FAILED:', JSON.stringify({ 
-        playerId: currentPlayerId, 
-        phase, 
-        hasHand: !!hand,
-        alreadyArranged: hand?.arranged,
-        dealt: hand?.allCards, 
-        sentNlhe: data.nlheCards,
-        sentPlo: data.ploCards
-      }));
-      socket.emit('error', `Invalid card arrangement (phase=${phase}, hasHand=${!!hand})`);
+      socket.emit('error', 'Invalid card arrangement');
     }
     if (success) {
       const player = table.game.getState().players.find(p => p.id === currentPlayerId);
@@ -209,6 +201,37 @@ io.on('connection', (socket) => {
             } else {
               emitToTable(tId, 'message', `No scoop! Pot of $${state.pot} carries over to next hand.`);
             }
+
+            // Log the hand
+            const handLog: HandLog = {
+              handNumber: state.handNumber,
+              timestamp: new Date().toISOString(),
+              players: state.players.map(p => ({
+                id: p.id,
+                name: p.name,
+                chipsBefore: p.chips + (state.winnerId === p.id ? -state.pot : 0) + state.ante,
+                chipsAfter: p.chips,
+              })),
+              board: state.board,
+              results: state.results.map(r => {
+                const player = state.players.find(p => p.id === r.playerId);
+                const hand = state.playerHands.get(r.playerId);
+                return {
+                  playerId: r.playerId,
+                  name: player?.name || '?',
+                  nlheCards: hand?.nlheCards || [],
+                  ploCards: hand?.ploCards || [],
+                  nlheRank: r.nlheResult.rankName,
+                  ploRank: r.ploResult.rankName,
+                };
+              }),
+              pot: state.pot,
+              winnerId: state.winnerId,
+              winnerName: state.winnerId ? state.players.find(p => p.id === state.winnerId)?.name || null : null,
+              scooped: !!state.winnerId,
+            };
+            t2.logger.logHand(handLog);
+            t2.logger.updateLedger(t2.game.getLedger());
 
             // Send updated ledger
             emitToTable(tId, 'ledger', t2.game.getLedger());
@@ -395,18 +418,23 @@ io.on('connection', (socket) => {
     sendPersonalizedState(table);
     emitToTable(currentTableId, 'message', `Hand #${table.game.getState().handNumber} started (simulation). Arrange your cards!`);
 
-    // Auto-arrange all bots' cards
-    for (const player of table.game.getState().players) {
-      if (player.id.startsWith('bot-')) {
-        const botHand = table.game.getState().playerHands.get(player.id);
-        if (botHand) {
-          const cards = botHand.allCards;
-          table.game.arrangeCards(player.id, [cards[0], cards[1]], [cards[2], cards[3], cards[4], cards[5]]);
+    // Auto-arrange all bots' cards (delayed to ensure state is sent to clients first)
+    const tableIdCopy = currentTableId;
+    setTimeout(() => {
+      const t = tables.get(tableIdCopy);
+      if (!t) return;
+      for (const player of t.game.getState().players) {
+        if (player.id.startsWith('bot-')) {
+          const botHand = t.game.getState().playerHands.get(player.id);
+          if (botHand && !botHand.arranged) {
+            const cards = botHand.allCards;
+            t.game.arrangeCards(player.id, [cards[0], cards[1]], [cards[2], cards[3], cards[4], cards[5]]);
+          }
         }
       }
-    }
-
-    emitToTable(currentTableId, 'message', `🤖 Bot(s) arranged cards automatically`);
+      emitToTable(tableIdCopy, 'message', `🤖 Bot(s) arranged cards automatically`);
+      sendPersonalizedState(t);
+    }, 500);
     sendPersonalizedState(table);
   });
 
