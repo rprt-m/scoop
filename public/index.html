@@ -932,9 +932,12 @@
     function confirmArrangement() {
       const filledNlhe = nlheCards.filter(Boolean);
       const filledPlo = ploCards.filter(Boolean);
+      addMessage(`[DEBUG] Confirm: NLHE=${filledNlhe.length}, PLO=${filledPlo.length}, cards=${JSON.stringify([...filledNlhe, ...filledPlo])}`);
       if (filledNlhe.length === 2 && filledPlo.length === 4) {
         socket.emit('arrangeCards', { nlheCards: filledNlhe, ploCards: filledPlo });
         document.getElementById('arrangementArea').style.display = 'none';
+      } else {
+        addMessage(`[DEBUG] Not sending — need 2+4, got ${filledNlhe.length}+${filledPlo.length}`);
       }
     }
 
