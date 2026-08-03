@@ -38,12 +38,12 @@ sudo systemctl stop scoop-poker 2>/dev/null || true
 sudo fuser -k 3001/tcp 2>/dev/null || true
 sleep 1
 
-LOG_FILE="${APP_DIR}/server.log"
+LOG_FILE="/tmp/scoop-poker.log"
 echo "" > "$LOG_FILE"
 
 cd "$APP_DIR"
 echo -e "  ${GREEN}Starting server...${NC}"
-echo -e "  Logs: ${LOG_FILE}"
+echo -e "  Logs: /tmp/scoop-poker.log"
 npx ts-node src/server.ts >> "$LOG_FILE" 2>&1 &
 APP_PID=$!
 sleep 2
