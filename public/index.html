@@ -1077,18 +1077,20 @@
     }
 
     function render(state) {
-      // Reset client state when new hand starts (phase goes to arranging with fresh cards)
-      if (state.phase === 'waiting' || state.phase === 'arranging') {
-        if (state.phase === 'arranging' && state.hands[myPlayerId]?.allCards) {
-          // New hand — reset if we have stale data
-          const myCards = state.hands[myPlayerId].allCards;
-          const currentPlaced = [...nlheCards, ...ploCards].filter(Boolean);
-          const hasStaleCards = currentPlaced.length > 0 && !currentPlaced.every(c => myCards.includes(c));
-          if (hasStaleCards || animatedBoardCards.length > 0) {
-            resetClientState();
-          }
-        } else if (state.phase === 'waiting') {
-          resetClientState();
+      // Always reset when entering arranging or waiting phase
+      if (state.phase === 'waiting') {
+        resetClientState();
+      }
+      if (state.phase === 'arranging' && state.hands[myPlayerId]?.allCards) {
+        // Check if these are new cards (different from what we have placed)
+        const myCards = state.hands[myPlayerId].allCards;
+        const currentPlaced = [...nlheCards, ...ploCards].filter(Boolean);
+        if (currentPlaced.length > 0 && !currentPlaced.every(c => myCards.includes(c))) {
+          // Stale cards from previous hand — reset
+          nlheCards = [null, null];
+          ploCards = [null, null, null, null];
+          selectedCard = null;
+          revealedCards = new Set();
         }
       }
 
