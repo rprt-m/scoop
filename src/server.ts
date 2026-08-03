@@ -166,7 +166,17 @@ io.on('connection', (socket) => {
     const success = table.game.arrangeCards(currentPlayerId, data.nlheCards, data.ploCards);
     if (!success) {
       const hand = table.game.getState().playerHands.get(currentPlayerId);
-      console.log('arrangeCards FAILED:', { playerId: currentPlayerId, phase: table.game.getState().phase, hasHand: !!hand, dealt: hand?.allCards, sent: [...data.nlheCards, ...data.ploCards] });
+      const phase = table.game.getState().phase;
+      console.log('arrangeCards FAILED:', JSON.stringify({ 
+        playerId: currentPlayerId, 
+        phase, 
+        hasHand: !!hand,
+        alreadyArranged: hand?.arranged,
+        dealt: hand?.allCards, 
+        sentNlhe: data.nlheCards,
+        sentPlo: data.ploCards
+      }));
+      socket.emit('error', `Invalid card arrangement (phase=${phase}, hasHand=${!!hand})`);
     }
     if (success) {
       const player = table.game.getState().players.find(p => p.id === currentPlayerId);
