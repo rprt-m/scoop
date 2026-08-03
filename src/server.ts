@@ -357,24 +357,26 @@ io.on('connection', (socket) => {
 
     const botCount = Math.min(4, Math.max(1, data?.botCount || 1));
     const botNames = ['Bot_Alice', 'Bot_Bob', 'Bot_Charlie', 'Bot_Dave', 'Bot_Eve'];
-    const addedBots: string[] = [];
 
-    // Add bots (up to table capacity)
-    for (let i = 0; i < botCount; i++) {
+    // Only add bots if we need more players
+    const existingBots = state.players.filter(p => p.id.startsWith('bot-'));
+    const botsNeeded = botCount - existingBots.length;
+
+    for (let i = 0; i < botsNeeded; i++) {
       if (table.game.getState().players.length >= 5) break;
 
       const botId = `bot-${crypto.randomBytes(4).toString('hex')}`;
-      const botName = botNames[i % botNames.length];
+      const botName = botNames[(existingBots.length + i) % botNames.length];
       const success = table.game.addPlayer(botId, botName, 500);
       if (success) {
         table.playerSockets.set(botId, 'bot');
-        addedBots.push(botId);
         emitToTable(currentTableId, 'message', `🤖 ${botName} joined for simulation`);
       }
     }
 
-    if (addedBots.length === 0) {
-      socket.emit('error', 'Table is full');
+    // Need at least 2 players total
+    if (table.game.getState().players.length < 2) {
+      socket.emit('error', 'Need at least 2 players');
       return;
     }
 
@@ -383,16 +385,18 @@ io.on('connection', (socket) => {
     sendPersonalizedState(table);
     emitToTable(currentTableId, 'message', `Hand #${table.game.getState().handNumber} started (simulation). Arrange your cards!`);
 
-    // Auto-arrange all bots' cards (first 2 = NLHE, last 4 = PLO)
-    for (const botId of addedBots) {
-      const botHand = table.game.getState().playerHands.get(botId);
-      if (botHand) {
-        const cards = botHand.allCards;
-        table.game.arrangeCards(botId, [cards[0], cards[1]], [cards[2], cards[3], cards[4], cards[5]]);
+    // Auto-arrange all bots' cards
+    for (const player of table.game.getState().players) {
+      if (player.id.startsWith('bot-')) {
+        const botHand = table.game.getState().playerHands.get(player.id);
+        if (botHand) {
+          const cards = botHand.allCards;
+          table.game.arrangeCards(player.id, [cards[0], cards[1]], [cards[2], cards[3], cards[4], cards[5]]);
+        }
       }
     }
 
-    emitToTable(currentTableId, 'message', `🤖 ${addedBots.length} bot(s) arranged cards automatically`);
+    emitToTable(currentTableId, 'message', `🤖 Bot(s) arranged cards automatically`);
     sendPersonalizedState(table);
   });
 
