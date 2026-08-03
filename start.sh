@@ -32,10 +32,10 @@ echo ""
 echo "  Starting server..."
 
 # Stop systemd service if running
-systemctl stop scoop-poker 2>/dev/null || true
+sudo systemctl stop scoop-poker 2>/dev/null || true
 
 # Kill any existing instance on port 3001
-fuser -k 3001/tcp 2>/dev/null || true
+sudo fuser -k 3001/tcp 2>/dev/null || true
 sleep 1
 
 LOG_FILE="${APP_DIR}/server.log"
